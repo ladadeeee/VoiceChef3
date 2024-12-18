@@ -2,9 +2,9 @@
 # VoiceChef
 VoiceChef is a revolutionary app that brings recipes to life with hands-free functionality. Designed for accessibility and convenience, VoiceChef allows users to cook effortlessly with the help of voice-over features and a speech synthesizer.
 # ScreenShot
-![App Screenshot] (CategoryGrid.PNG)
-![App Screenshot] (FavoritesView.PNG)
-![App Screenshot] (SingleCategoryGrid.PNG)
+![App Screenshot](CategoryGrid.PNG)
+![App Screenshot](FavoritesView.PNG)
+![App Screenshot](SingleCategoryGrid.PNG)
 # Features 
 - **Categorized Recipe List**: Browse recipes organized by categories for easy discovery.
 - **Favorites List**: Save your favorite recipes for quick access anytime.
