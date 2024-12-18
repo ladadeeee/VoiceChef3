@@ -13,5 +13,6 @@ struct VoiceChef3App: App {
         WindowGroup {
             MainView()
         }
+        .modelContainer(for: FavoriteRecipe.self)
     }
 }

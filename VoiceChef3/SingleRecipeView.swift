@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct SingleRecipeView: View {
     let id: String
     
     @State private var meal: MealDetail? = nil
+    @State private var speechManager = SpeechManager()
     
     var body: some View {
         ScrollView {
@@ -19,17 +21,20 @@ struct SingleRecipeView: View {
                     switch phase {
                     case .empty:
                         ProgressView()
+                            .accessibilityLabel("Loading recipe image")
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFit()
                             .background(Color.gray)
                             .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .accessibilityLabel("Recipe image for \(meal.strMeal)")
                     case .failure:
                         Image(systemName: "photo")
                             .resizable()
                             .scaledToFit()
                             .foregroundColor(.gray)
+                            .accessibilityLabel("Recipe image not available")
                     @unknown default:
                         EmptyView()
                     }
@@ -44,22 +49,30 @@ struct SingleRecipeView: View {
                         .font(.subheadline)
                         .foregroundColor(.orange)
                 }
-                
-                // Pulsante "Start"
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("\(meal.strMeal), \(meal.strCategory) recipe")
+             
                 Button(action: {
-                    print("Start tapped!")
+                    if speechManager.isSpeaking {
+                        speechManager.stopSpeaking()
+                    } else {
+                        speechManager.speak(recipe: meal)
+                    }
                 }) {
                     HStack {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .foregroundColor(.white)
-                        Text("START")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                    }
+                    Image(systemName: speechManager.isSpeaking ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                        .foregroundColor(.white)
+                        .accessibilityHidden(true)
+                    Text(speechManager.isSpeaking ? "STOP" : "START")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                }
                     .padding()
                     .background(Color.orange)
                     .cornerRadius(8)
                 }
+                .accessibilityLabel(speechManager.isSpeaking ? "Stop reading recipe" : "Start reading recipe")
+                .accessibilityHint("Double tap to \(speechManager.isSpeaking ? "stop" : "start") voice reading")
                 .frame(maxWidth: .infinity, alignment: .center)
                 
                 HStack {
@@ -76,6 +89,9 @@ struct SingleRecipeView: View {
                                 .foregroundColor(.primary)
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Ingredients list")
+                    .accessibilityValue(meal.ingredients.map { "\($0.amount) \($0.name)" }.joined(separator: ", "))
                     Spacer()
                 }
 
@@ -89,6 +105,9 @@ struct SingleRecipeView: View {
                         .font(.body)
                         .foregroundColor(.primary)
                 }
+                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("Cooking instructions")
+                                .accessibilityValue(meal.strInstructions)
             }
         } .padding()
         .task {

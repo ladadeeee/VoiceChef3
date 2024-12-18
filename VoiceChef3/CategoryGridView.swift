@@ -12,6 +12,13 @@ struct CategoryGridView: View {
     @State private var categories: [Category]? = nil
     @State private var searchText = ""
     
+    private var filteredCategories: [Category] {
+        guard let categories = categories else { return [] }
+        if searchText.isEmpty {
+            return categories
+        }
+        return categories.filter { $0.strCategory.localizedCaseInsensitiveContains(searchText) }
+    }
     
     var body: some View {
         NavigationStack {
@@ -20,14 +27,15 @@ struct CategoryGridView: View {
                     GridItem(.flexible()),
                     GridItem(.flexible())
                 ], spacing: 20) {
-                    if let categories {
-                        ForEach(categories) { category in
+                    if categories != nil {
+                        ForEach(filteredCategories) { category in
                             NavigationLink(destination: OneCategoryView(name: category.strCategory, categoryName: category.strCategory)) {
                                 VStack(spacing: 10) {
                                     AsyncImage(url: category.imageURL) { phase in
                                         switch phase {
                                         case .empty:
                                             ProgressView()
+                                                .accessibilityLabel("Loading \(category.strCategory) image")
                                         case .success(let image):
                                             image
                                                 .resizable()
@@ -39,6 +47,7 @@ struct CategoryGridView: View {
                                                 .resizable()
                                                 .scaledToFit()
                                                 .foregroundColor(.gray)
+                                                .accessibilityLabel("Image failed to load")
                                         @unknown default:
                                             EmptyView()
                                         }
@@ -47,6 +56,9 @@ struct CategoryGridView: View {
                                         .bold()
                                         .foregroundColor(.primary)
                                 }
+                                .accessibilityElement(children: .combine)
+                                                                .accessibilityLabel("Category \(category.strCategory)")
+                                                                .accessibilityHint("Double Tap to view recipes in this category")
                             }
                         }
                     }

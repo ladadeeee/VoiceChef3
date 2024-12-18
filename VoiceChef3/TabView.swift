@@ -12,10 +12,10 @@ struct MainView: View {
         TabView(selection: .constant(0)) {
             CategoryGridView()
                 .tabItem {
-                    Label("Recipes", systemImage: "book")
+                    Label("Recipes", systemImage: "book.closed")
                 }
             
-            FavouritesView()
+            FavoritesView()
                 .tabItem {
                     Label("Favourites", systemImage: "heart.fill")
                 }
